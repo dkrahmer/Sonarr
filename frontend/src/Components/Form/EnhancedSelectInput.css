@@ -5,6 +5,10 @@
   align-items: center;
 }
 
+.editableContainer {
+  width: 100%;
+}
+
 .hasError {
   composes: hasError from '~Components/Form/Input.css';
 }
@@ -20,6 +24,16 @@
 
 .dropdownArrowContainer {
   margin-left: 12px;
+}
+
+.dropdownArrowContainerEditable {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 30%;
+  height: 35px;
+  text-align: right;
+  padding-right: 17px;
 }
 
 .dropdownArrowContainerDisabled {

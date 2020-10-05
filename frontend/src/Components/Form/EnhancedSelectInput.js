@@ -14,6 +14,7 @@ import Measure from 'Components/Measure';
 import Modal from 'Components/Modal/Modal';
 import ModalBody from 'Components/Modal/ModalBody';
 import Scroller from 'Components/Scroller/Scroller';
+import TextInput from './TextInput';
 import HintedSelectInputSelectedValue from './HintedSelectInputSelectedValue';
 import HintedSelectInputOption from './HintedSelectInputOption';
 import styles from './EnhancedSelectInput.css';
@@ -168,11 +169,21 @@ class EnhancedSelectInput extends Component {
     }
   }
 
+  onFocus = () => {
+
+    if (this.state.isOpen) {
+      this._removeListener();
+      this.setState({ isOpen: false });
+    }
+  }
+
   onBlur = () => {
-    // Calling setState without this check prevents the click event from being properly handled on Chrome (it is on firefox)
-    const origIndex = getSelectedIndex(this.props);
-    if (origIndex !== this.state.selectedIndex) {
-      this.setState({ selectedIndex: origIndex });
+    if (!this.props.isEditable) {
+      // Calling setState without this check prevents the click event from being properly handled on Chrome (it is on firefox)
+      const origIndex = getSelectedIndex(this.props);
+      if (origIndex !== this.state.selectedIndex) {
+        this.setState({ selectedIndex: origIndex });
+      }
     }
   }
 
@@ -292,15 +303,18 @@ class EnhancedSelectInput extends Component {
     const {
       className,
       disabledClassName,
+      name,
       value,
       values,
       isDisabled,
+      isEditable,
       hasError,
       hasWarning,
       valueOptions,
       selectedValueOptions,
       selectedValueComponent: SelectedValueComponent,
-      optionComponent: OptionComponent
+      optionComponent: OptionComponent,
+      onChange
     } = this.props;
 
     const {
@@ -326,40 +340,71 @@ class EnhancedSelectInput extends Component {
                   whitelist={['width']}
                   onMeasure={this.onMeasure}
                 >
-                  <Link
-                    className={classNames(
-                      className,
-                      hasError && styles.hasError,
-                      hasWarning && styles.hasWarning,
-                      isDisabled && disabledClassName
-                    )}
-                    isDisabled={isDisabled}
-                    onBlur={this.onBlur}
-                    onKeyDown={this.onKeyDown}
-                    onPress={this.onPress}
-                  >
-                    <SelectedValueComponent
-                      value={value}
-                      values={values}
-                      {...selectedValueOptions}
-                      {...selectedOption}
-                      isDisabled={isDisabled}
-                      isMultiSelect={isMultiSelect}
-                    >
-                      {selectedOption ? selectedOption.value : null}
-                    </SelectedValueComponent>
+                  {
+                    isEditable ?
+                      <div
+                        className={styles.editableContainer}
+                      >
+                        <TextInput
+                          className={className}
+                          name={name}
+                          value={value}
+                          readOnly={isDisabled}
+                          hasError={hasError}
+                          hasWarning={hasWarning}
+                          onFocus={this.onFocus}
+                          onBlur={this.onBlur}
+                          onChange={onChange}
+                        />
+                        <Link
+                          className={classNames(
+                            styles.dropdownArrowContainerEditable,
+                            isDisabled ?
+                              styles.dropdownArrowContainerDisabled :
+                              styles.dropdownArrowContainer)
+                          }
+                          onPress={this.onPress}
+                        >
+                          <Icon
+                            name={icons.CARET_DOWN}
+                          />
+                        </Link>
+                      </div> :
+                      <Link
+                        className={classNames(
+                          className,
+                          hasError && styles.hasError,
+                          hasWarning && styles.hasWarning,
+                          isDisabled && disabledClassName
+                        )}
+                        isDisabled={isDisabled}
+                        onBlur={this.onBlur}
+                        onKeyDown={this.onKeyDown}
+                        onPress={this.onPress}
+                      >
+                        <SelectedValueComponent
+                          value={value}
+                          values={values}
+                          {...selectedValueOptions}
+                          {...selectedOption}
+                          isDisabled={isDisabled}
+                          isMultiSelect={isMultiSelect}
+                        >
+                          {selectedOption ? selectedOption.value : null}
+                        </SelectedValueComponent>
 
-                    <div
-                      className={isDisabled ?
-                        styles.dropdownArrowContainerDisabled :
-                        styles.dropdownArrowContainer
-                      }
-                    >
-                      <Icon
-                        name={icons.CARET_DOWN}
-                      />
-                    </div>
-                  </Link>
+                        <div
+                          className={isDisabled ?
+                            styles.dropdownArrowContainerDisabled :
+                            styles.dropdownArrowContainer
+                          }
+                        >
+                          <Icon
+                            name={icons.CARET_DOWN}
+                          />
+                        </div>
+                      </Link>
+                  }
                 </Measure>
               </div>
             )}
@@ -483,6 +528,7 @@ EnhancedSelectInput.propTypes = {
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.arrayOf(PropTypes.number)]).isRequired,
   values: PropTypes.arrayOf(PropTypes.object).isRequired,
   isDisabled: PropTypes.bool.isRequired,
+  isEditable: PropTypes.bool.isRequired,
   hasError: PropTypes.bool,
   hasWarning: PropTypes.bool,
   valueOptions: PropTypes.object.isRequired,
@@ -496,6 +542,7 @@ EnhancedSelectInput.defaultProps = {
   className: styles.enhancedSelect,
   disabledClassName: styles.isDisabled,
   isDisabled: false,
+  isEditable: false,
   valueOptions: {},
   selectedValueOptions: {},
   selectedValueComponent: HintedSelectInputSelectedValue,

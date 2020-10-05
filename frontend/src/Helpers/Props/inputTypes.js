@@ -17,6 +17,7 @@ export const SERIES_TYPE_SELECT = 'seriesTypeSelect';
 export const TAG = 'tag';
 export const TEXT = 'text';
 export const TEXT_TAG = 'textTag';
+export const UMASK = 'umask';
 
 export const all = [
   AUTO_COMPLETE,
@@ -37,5 +38,6 @@ export const all = [
   SERIES_TYPE_SELECT,
   TAG,
   TEXT,
-  TEXT_TAG
+  TEXT_TAG,
+  UMASK
 ];
