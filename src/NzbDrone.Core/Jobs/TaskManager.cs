@@ -63,10 +63,10 @@ namespace NzbDrone.Core.Jobs
                 {
                     new ScheduledTask{ Interval = 1, TypeName = typeof(CheckForFinishedDownloadCommand).FullName},
                     new ScheduledTask{ Interval = 5, TypeName = typeof(MessagingCleanupCommand).FullName},
-                    new ScheduledTask{ Interval = 6*60, TypeName = typeof(ApplicationUpdateCommand).FullName},
+                    new ScheduledTask{ Interval = 0*6*60, TypeName = typeof(ApplicationUpdateCommand).FullName}, // DK: Interval set to 0 to disable. Can be run from the web GUI. (original: 24*60)
                     new ScheduledTask{ Interval = 3*60, TypeName = typeof(UpdateSceneMappingCommand).FullName},
                     new ScheduledTask{ Interval = 6*60, TypeName = typeof(CheckHealthCommand).FullName},
-                    new ScheduledTask{ Interval = 12*60, TypeName = typeof(RefreshSeriesCommand).FullName},
+                    new ScheduledTask{ Interval = 0*12*60, TypeName = typeof(RefreshSeriesCommand).FullName}, // DK: Interval set to 0 to disable. Can be run from the web GUI. (original: 24*60)
                     new ScheduledTask{ Interval = 24*60, TypeName = typeof(HousekeepingCommand).FullName},
                     new ScheduledTask{ Interval = 7*24*60, TypeName = typeof(BackupCommand).FullName},
 
