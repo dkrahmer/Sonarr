@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NzbDrone.Common.Disk;
 using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Configuration.Events;
 using NzbDrone.Core.Download;
@@ -27,6 +28,7 @@ namespace NzbDrone.Core.HealthCheck.Checks
 
         public override HealthCheck Check()
         {
+            var droneFactoryFolder = new OsPath(_configService.DownloadedEpisodesFolder);
             List<ImportMechanismCheckStatus> downloadClients;
 
             try
@@ -44,7 +46,13 @@ namespace NzbDrone.Core.HealthCheck.Checks
             }
 
             var downloadClientIsLocalHost = downloadClients.All(v => v.Status.IsLocalhost);
+            /*
+            var downloadClientOutputInDroneFactory = !droneFactoryFolder.IsEmpty &&
+                                                     downloadClients.Any(v => v.Status.OutputRootFolders != null &&
+                                                     v.Status.OutputRootFolders.Any(droneFactoryFolder.Contains));
+            */
 
+            /*
             if (!_configService.IsDefined("EnableCompletedDownloadHandling"))
             {
                 // Migration helper logic
@@ -65,10 +73,20 @@ namespace NzbDrone.Core.HealthCheck.Checks
 
                 return new HealthCheck(GetType(), HealthCheckResult.Warning, "Enable Completed Download Handling if possible", "Migrating-to-Completed-Download-Handling");
             }
+            */
 
-            if (!_configService.EnableCompletedDownloadHandling)
+            /*
+            if (!_configService.EnableCompletedDownloadHandling
+                && string.IsNullOrWhiteSpace(_configService.DownloadedEpisodesFolder))
+                //&& _configService.CheckForFinishedDownloadInterval == 0)
             {
                 return new HealthCheck(GetType(), HealthCheckResult.Warning, "Enable Completed Download Handling");
+            }
+            */
+
+            if (!_configService.EnableCompletedDownloadHandling && droneFactoryFolder.IsEmpty)
+            {
+                return new HealthCheck(GetType(), HealthCheckResult.Warning, "Enable Completed Download Handling or configure Drone factory");
             }
 
             return new HealthCheck(GetType());

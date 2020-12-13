@@ -8,6 +8,7 @@ using NzbDrone.Common;
 using NzbDrone.Common.Disk;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Core.Tv;
+using NzbDrone.Core.Configuration;
 
 namespace NzbDrone.Core.RootFolders
 {
@@ -26,6 +27,7 @@ namespace NzbDrone.Core.RootFolders
         private readonly IRootFolderRepository _rootFolderRepository;
         private readonly IDiskProvider _diskProvider;
         private readonly ISeriesRepository _seriesRepository;
+        private readonly IConfigService _configService;
         private readonly Logger _logger;
 
         private static readonly HashSet<string> SpecialFolders = new HashSet<string>
@@ -45,11 +47,13 @@ namespace NzbDrone.Core.RootFolders
         public RootFolderService(IRootFolderRepository rootFolderRepository,
                                  IDiskProvider diskProvider,
                                  ISeriesRepository seriesRepository,
+                                 IConfigService configService,
                                  Logger logger)
         {
             _rootFolderRepository = rootFolderRepository;
             _diskProvider = diskProvider;
             _seriesRepository = seriesRepository;
+            _configService = configService;
             _logger = logger;
         }
 
@@ -102,6 +106,11 @@ namespace NzbDrone.Core.RootFolders
             if (all.Exists(r => r.Path.PathEquals(rootFolder.Path)))
             {
                 throw new InvalidOperationException("Recent directory already exists.");
+            }
+
+            if (_configService.DownloadedEpisodesFolder.IsNotNullOrWhiteSpace() && _configService.DownloadedEpisodesFolder.PathEquals(rootFolder.Path))
+            {
+                throw new InvalidOperationException("Drone Factory folder cannot be used.");
             }
 
             if (!_diskProvider.FolderWritable(rootFolder.Path))

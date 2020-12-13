@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using NLog;
 using NLog.Fluent;
+using NzbDrone.Common.Disk;
 using NzbDrone.Common.EnvironmentInfo;
 using NzbDrone.Common.Extensions;
 using NzbDrone.Common.Instrumentation.Extensions;
+using NzbDrone.Core.Configuration;
 using NzbDrone.Core.Download.TrackedDownloads;
 using NzbDrone.Core.History;
 using NzbDrone.Core.MediaFiles;
@@ -26,6 +28,7 @@ namespace NzbDrone.Core.Download
 
     public class CompletedDownloadService : ICompletedDownloadService
     {
+        private readonly IConfigService _configService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IHistoryService _historyService;
         private readonly IProvideImportItemService _importItemService;
@@ -35,7 +38,8 @@ namespace NzbDrone.Core.Download
         private readonly ITrackedDownloadAlreadyImported _trackedDownloadAlreadyImported;
         private readonly Logger _logger;
 
-        public CompletedDownloadService(IEventAggregator eventAggregator,
+        public CompletedDownloadService(IConfigService configService, 
+                                        IEventAggregator eventAggregator,
                                         IHistoryService historyService,
                                         IProvideImportItemService importItemService,
                                         IDownloadedEpisodesImportService downloadedEpisodesImportService,
@@ -44,6 +48,7 @@ namespace NzbDrone.Core.Download
                                         ITrackedDownloadAlreadyImported trackedDownloadAlreadyImported,
                                         Logger logger)
         {
+            _configService = configService;
             _eventAggregator = eventAggregator;
             _historyService = historyService;
             _importItemService = importItemService;
@@ -89,6 +94,14 @@ namespace NzbDrone.Core.Download
                 (OsInfo.IsNotWindows && !downloadItemOutputPath.IsUnixPath))
             {
                 trackedDownload.Warn("[{0}] is not a valid local path. You may need a Remote Path Mapping.", downloadItemOutputPath);
+                return;
+            }
+
+            var downloadedEpisodesFolder = new OsPath(_configService.DownloadedEpisodesFolder);
+
+            if (downloadedEpisodesFolder.Contains(downloadItemOutputPath))
+            {
+                trackedDownload.Warn("Intermediate Download path inside drone factory, Skipping.");
                 return;
             }
 

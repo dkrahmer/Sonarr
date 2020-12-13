@@ -87,6 +87,12 @@ namespace NzbDrone.Core.Jobs
                     { 
                         Interval = GetRssSyncInterval(),
                         TypeName = typeof(RssSyncCommand).FullName
+                    },
+
+                    new ScheduledTask
+                    {
+                        Interval = _configService.DownloadedEpisodesScanInterval,
+                        TypeName = typeof(DownloadedEpisodesScanCommand).FullName
                     }
                 };
 
@@ -158,7 +164,10 @@ namespace NzbDrone.Core.Jobs
             var rss = _scheduledTaskRepository.GetDefinition(typeof(RssSyncCommand));
             rss.Interval = _configService.RssSyncInterval;
 
-            _scheduledTaskRepository.Update(rss);
+            var downloadedEpisodes = _scheduledTaskRepository.GetDefinition(typeof(DownloadedEpisodesScanCommand)); _scheduledTaskRepository.Update(rss);
+            downloadedEpisodes.Interval = _configService.DownloadedEpisodesScanInterval;
+
+            _scheduledTaskRepository.UpdateMany(new List<ScheduledTask> { rss, downloadedEpisodes });
         }
     }
 }

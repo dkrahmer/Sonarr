@@ -5,6 +5,8 @@ namespace Sonarr.Api.V3.Config
 {
     public class DownloadClientConfigResource : RestResource
     {
+        public string DownloadedEpisodesFolder { get; set; }
+        public int DownloadedEpisodesScanInterval { get; set; }
         public string DownloadClientWorkingFolders { get; set; }
 
         public bool EnableCompletedDownloadHandling { get; set; }
@@ -20,6 +22,8 @@ namespace Sonarr.Api.V3.Config
         {
             return new DownloadClientConfigResource
             {
+                DownloadedEpisodesFolder = model.DownloadedEpisodesFolder,
+                DownloadedEpisodesScanInterval = model.DownloadedEpisodesScanInterval,
                 DownloadClientWorkingFolders = model.DownloadClientWorkingFolders,
 
                 EnableCompletedDownloadHandling = model.EnableCompletedDownloadHandling,

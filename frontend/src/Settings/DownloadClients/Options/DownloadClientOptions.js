@@ -98,6 +98,37 @@ function DownloadClientOptions(props) {
                 </FormGroup>
               </Form>
             </FieldSet>
+
+            <FieldSet legend="Drone Factory Options">
+              <Form>
+                <FormGroup size={sizes.MEDIUM}>
+                  <FormLabel>Drone Factory Directory</FormLabel>
+
+                  <FormInputGroup
+                    type={inputTypes.PATH}
+                    name="downloadedEpisodesFolder"
+                    helpText="Optional folder to periodically scan for possible imports."
+                    onChange={onInputChange}
+                    {...settings.downloadedEpisodesFolder}
+                  />
+                </FormGroup>
+
+                <FormGroup size={sizes.MEDIUM}>
+                  <FormLabel>Drone Factory Interval</FormLabel>
+
+                  <FormInputGroup
+                    type={inputTypes.NUMBER}
+                    name="downloadedEpisodesScanInterval"
+                    min={0}
+                    max={120}
+                    unit="minutes"
+                    helpText="Interval in minutes. Set to zero to disable"
+                    onChange={onInputChange}
+                    {...settings.downloadedEpisodesScanInterval}
+                  />
+                </FormGroup>
+              </Form>
+            </FieldSet>
           </div>
       }
     </div>

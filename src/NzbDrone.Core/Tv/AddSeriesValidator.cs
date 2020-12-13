@@ -13,6 +13,7 @@ namespace NzbDrone.Core.Tv
     {
         public AddSeriesValidator(RootFolderValidator rootFolderValidator,
                                   SeriesPathValidator seriesPathValidator,
+                                  DroneFactoryValidator droneFactoryValidator,
                                   SeriesAncestorValidator seriesAncestorValidator,
                                   SeriesTitleSlugValidator seriesTitleSlugValidator)
         {
@@ -20,6 +21,7 @@ namespace NzbDrone.Core.Tv
                                 .IsValidPath()
                                 .SetValidator(rootFolderValidator)
                                 .SetValidator(seriesPathValidator)
+                                .SetValidator(droneFactoryValidator)
                                 .SetValidator(seriesAncestorValidator);
 
             RuleFor(c => c.TitleSlug).SetValidator(seriesTitleSlugValidator);
