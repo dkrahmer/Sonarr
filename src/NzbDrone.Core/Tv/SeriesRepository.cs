@@ -11,6 +11,7 @@ namespace NzbDrone.Core.Tv
     {
         bool SeriesPathExists(string path);
         Series FindByTitle(string cleanTitle);
+        Series FindByTitleIgnoreParentheses(string cleanTitle);
         Series FindByTitle(string cleanTitle, int year);
         List<Series> FindByTitleInexact(string cleanTitle);
         Series FindByTvdbId(int tvdbId);
@@ -44,6 +45,21 @@ namespace NzbDrone.Core.Tv
             return ReturnSingleSeriesOrThrow(series);
         }
 
+        public Series FindByTitleIgnoreParentheses(string cleanTitle)
+        {
+            cleanTitle = cleanTitle.ToLowerInvariant();
+
+            var series = Query.Where(s => s.Title.Contains("(") && s.CleanTitle.StartsWith(cleanTitle))
+                                        .ToList();
+
+            if (series.Count > 1)
+                series = series.OrderByDescending(s => s.CleanTitle.Length)
+                                                   .Take(1) // Only keep the longest title match
+                                                   .ToList();
+
+            return ReturnSingleSeriesOrThrow(series);
+        }
+        
         public Series FindByTitle(string cleanTitle, int year)
         {
             cleanTitle = cleanTitle.ToLowerInvariant();
